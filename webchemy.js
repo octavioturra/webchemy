@@ -6865,7 +6865,7 @@ var Webchemy = (function () {
 							blob = new Blob([view], {'type': parts[1]});
 							saveAs(
 								blob
-								, "Webchemy.png"
+								, "Webchemy_" + (Math.random()*999).toFixed(0) + ".png"
 							);
 						}());
                     } else {
