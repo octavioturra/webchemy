@@ -5604,7 +5604,65 @@ var Webchemy = (function () {
                 width: width,
                 height: height
             };
-        };
+        };				
+				canvas.addEventListener('dragenter', function(e) {
+					e.preventDefault();
+					//e.stopPropagation();
+				});
+
+				canvas.addEventListener('dragover', function(e) {
+					this.classList.add('active');
+					e.preventDefault();
+					//e.stopPropagation();
+				});
+
+				canvas.addEventListener('dragleave', function(e) {
+					this.classList.remove('active');
+					e.preventDefault();
+					//e.stopPropagation();
+				});
+
+				canvas.addEventListener('dragend', function(e) {
+					e.preventDefault();
+					//e.stopPropagation();    
+				});
+
+				function renderToCanvas(img, x, y){
+					var canvas = document.querySelector('canvas');
+					var ctx = canvas.getContext('2d');
+
+					if(img.width>img.height){
+						ctx.drawImage(img, 0, y - img.height*0.5, width, img.height * (width/img.width));	
+					}else{
+						ctx.drawImage(img, x - img.width*0.5, 0, img.width * (height/img.height), height);	
+					}
+				}
+
+				function readImage(file, cb){
+					var reader = new FileReader();
+					if(!file.type.match(/image\//gi)){
+						return cb(new Error('It\'s not an image'));
+					}
+					reader.addEventListener('load', function(ev){
+						var img = new Image(); 
+						img.src = ev.target.result; 
+						cb(null, img);
+					});
+					reader.readAsDataURL(file);
+				}
+
+				canvas.addEventListener('drop', function(e) {
+					e.preventDefault();
+					//e.stopPropagation();    
+
+					readImage(e.dataTransfer.files[0], function(err, img){						
+						renderToCanvas(img, e.x, e.y);
+					});
+
+					this.classList.remove('active');
+					return false;
+				});
+			
     }
     /*WebchemyBrush(p)
 	Creates all the svg shapes and draws them onto a canvas. Has a number of settings (size, mode, mirror, gradient, etc)
