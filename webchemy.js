@@ -1,4 +1,4 @@
-﻿/*
+/*
 	Webchemy - Alchemy for the web
 	Copyright (C) 2012 bitbof (http://bitbof.com)
 
@@ -6848,7 +6848,7 @@ var Webchemy = (function () {
                     BB = window.BlobBuilder || window.WebKitBlobBuilder || window.MozBlobBuilder;
                     bb = new BB();
                     bb.append(tools.getSVGString());
-                    window.saveAs(bb.getBlob("text/plain"), "Webchemy.svg");
+                    window.saveAs(bb.getBlob("text/plain"), "Webchemy_" + (Math.random()*999).toFixed(0) + ".svg");
                 }
                 if (val.exportPNG) {
                     if (window.chrome) {
