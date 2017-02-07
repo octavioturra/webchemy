@@ -4,13 +4,13 @@
   "icons": [
     {
       "src": "/webchemy/icon.png",
-      "sizes": "32x32",
+      "sizes": "96x96",
       "type": "image/png"
     }
   ],
   "start_url": "/webchemy/index.html",
   "display": "standalone",
-  "orientation": "landscape",
+  "orientation": "portrait",
   "theme_color": "#666666",
   "background_color": "#fefefe"
 }
