@@ -34,6 +34,8 @@
 
 	Also if it runs on mobile, this makes sense: <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;" />
 */
+
+
 var Webchemy = (function () {
     "use strict";
     var UI = {}, LIB = {}, requestAnimFrame, global;
@@ -316,7 +318,7 @@ var Webchemy = (function () {
 		pageX:			pageX from event only when dragging
 		pageY:			pageY from event only when dragging
 		touch:			True when using touch
-		
+
 		pinch: {		Touch input with 2 fingers -> pinch gesture
 			down:		Started pinch gesture
 			dX:			Delta x of center point between both fingers
@@ -2962,11 +2964,11 @@ var Webchemy = (function () {
     };
 	/*UI.BrushPreview()
 	A canvas previewing brush settings. Can expand and collapse in size. (halfBoxSize * 4 and halfBoxSize * 2)
-	
+
 	expand(<boolean>)		Expand or collapse depending on param
 	update(brushState)		Updates the preview
 	getDiv()				Returns the canvas
-	
+
 	brushState = {
 		symmetry: "horizontal" | "vertical"		Brush symmetry
 		mode: "pull" | "stroke" | "fill"		Brush mode
@@ -3152,7 +3154,7 @@ var Webchemy = (function () {
 	updateBrushPreview(brushState)	Update the brush preview and opacity label
 	getBar()						Returns the ExpandBar object (not div)
 	getButton()						Returns the ExpandButton object (not div)
-	
+
 	brushState = {
 		opacity: <number>						Brush opacity (0.0 - 1.0)
 		symmetry: "horizontal" | "vertical"		Brush symmetry
@@ -3305,7 +3307,7 @@ var Webchemy = (function () {
     /*UI.ColorSelection(callback)
 	2 Sliders, one for Hue and one for Saturation/Value.
 	callback	{r: 0-255, g: 0-255, b: 0-255} Currently selected color. On change.
-	
+
 	setcolor({r: , g: , b: })	Set color for sliders
 	getDiv()					Returns the div element with both sliders
 	*/
@@ -3477,7 +3479,7 @@ var Webchemy = (function () {
 	/*UI.ColorSwatch(callback)
 	Offers a few color palettes that can be customized.
 	callback({r, g, b})		when a new color was selected
-	
+
 	setColor({r, g, b})		Set the currently selected color ... also needs to be done after callback
 	getDiv()				Get the div of the element
      */
@@ -4241,9 +4243,9 @@ var Webchemy = (function () {
     };
     /*UI.BarContainer(callback)
 	Manages all ButtonBarCombinations. Puts all ExpandButtons and ColorButtons on their own bar.
-	
+
 	callback		Callback on toggleHide - tells you if bar is hidden or not
-	
+
 	add(<ButtonBarCombination> or <ColorButtonBarCombination>)	Add a combination
 	addRegularButton(<Button>)		Add a UI.Button - so something that doesn't expand
 									The button won't be affected
@@ -4816,11 +4818,23 @@ var Webchemy = (function () {
         });
         //chrome only atm
         exportIntentButton = new UI.Button({
-            text: "Edit",
-            title: "Switch into different Web App (Kleki is recommended)",
+            text: "Load",
+            title: "Load image",
             callback: function () {
-                callback({
-                    intentEdit: true
+                var file = document.createElement('input');
+                file.setAttribute('type', 'file');
+                file.setAttribute('name', 'upload');
+                file.setAttribute('id', 'upload');
+                file.style.display = 'none';
+                document.body.appendChild(file);
+                file.click();
+                file.addEventListener('change', function(ev) {
+                    var files = ev.target.files;
+                    if (files.length) {
+                        readImage(files[0], function(err, img){
+                            renderToCanvas(img, window.outerWidth, window.outerHeight);
+                        });
+                    }
                 });
                 barContainer.collapse();
             }
@@ -4948,11 +4962,11 @@ var Webchemy = (function () {
 		pick: {x, y}				On using eye dropper at x, y
 	}
 	reset()						Reset the view - center and set zoom to 1
-	resize({width:, height:})	Resize viewport			
+	resize({width:, height:})	Resize viewport
 	zoomIn()					Zoom-out action
 	zoomOut()					Zoom-in action
 	enterPickerMode()			Initiates eye dropper mode
-	setHandTool(<boolean>)		Set hand tool on/off	
+	setHandTool(<boolean>)		Set hand tool on/off
 	getDiv()					Return the div element
 	*/
     function WebchemyCanvasView(p) {
@@ -5461,7 +5475,7 @@ var Webchemy = (function () {
     }
     /*WebchemyCanvas
 	Canvas consisting of an html canvas element and svg element on top.
-	
+
 	copy1pxCanvasContext(x, y)		Returns 1x1px canvas at x y -> for eye dropper
 	clear({w , h})					Clear/init the canvas
 	setSize({w, h})					Resize the canvas - not quite a clear
@@ -5604,7 +5618,31 @@ var Webchemy = (function () {
                 width: width,
                 height: height
             };
-        };				
+        };
+
+        function renderToCanvas(img){
+            var canvas = document.querySelector('canvas');
+            var ctx = canvas.getContext('2d');
+            ctx.drawImage(img, canvas.width/2 - img.width/2, 0);
+        }
+
+        function readImage(file, cb){
+            var reader = new FileReader();
+            if(!file.type.match(/image\//gi)){
+                return cb(new Error('It\'s not an image'));
+            }
+            reader.addEventListener('load', function(ev){
+                var img = new Image();
+                img.src = ev.target.result;
+                cb(null, img);
+            });
+            reader.readAsDataURL(file);
+        }
+
+
+        window.renderToCanvas = renderToCanvas.bind(this);
+        window.readImage = readImage.bind(this);
+
 				canvas.addEventListener('dragenter', function(e) {
 					e.preventDefault();
 					//e.stopPropagation();
@@ -5624,45 +5662,21 @@ var Webchemy = (function () {
 
 				canvas.addEventListener('dragend', function(e) {
 					e.preventDefault();
-					//e.stopPropagation();    
+					//e.stopPropagation();
 				});
-
-				function renderToCanvas(img, x, y){
-					var canvas = document.querySelector('canvas');
-					var ctx = canvas.getContext('2d');
-
-					if(img.width>img.height){
-						ctx.drawImage(img, 0, y - img.height*0.5, width, img.height * (width/img.width));	
-					}else{
-						ctx.drawImage(img, x - img.width*0.5, 0, img.width * (height/img.height), height);	
-					}
-				}
-
-				function readImage(file, cb){
-					var reader = new FileReader();
-					if(!file.type.match(/image\//gi)){
-						return cb(new Error('It\'s not an image'));
-					}
-					reader.addEventListener('load', function(ev){
-						var img = new Image(); 
-						img.src = ev.target.result; 
-						cb(null, img);
-					});
-					reader.readAsDataURL(file);
-				}
 
 				canvas.addEventListener('drop', function(e) {
 					e.preventDefault();
-					//e.stopPropagation();    
+					//e.stopPropagation();
 
-					readImage(e.dataTransfer.files[0], function(err, img){						
-						renderToCanvas(img, e.x, e.y);
+					window.readImage(e.dataTransfer.files[0], function(err, img){
+						window.renderToCanvas(img);
 					});
 
 					this.classList.remove('active');
 					return false;
 				});
-			
+
     }
     /*WebchemyBrush(p)
 	Creates all the svg shapes and draws them onto a canvas. Has a number of settings (size, mode, mirror, gradient, etc)
@@ -5674,7 +5688,7 @@ var Webchemy = (function () {
 	goLine({x: , y: })							Line continues (dragging)
 	endLine()									Line ends (mouse up, touch release)
 	drawActionOnContext({action, context, w, h})	draw an action(created by this brush) onto a context(of canavs)
-	setSize({width: , height: })				Set with, height of canvas in px					
+	setSize({width: , height: })				Set with, height of canvas in px
 	isDrawing()									True/false is the brush drawing
 	getAction()									Returns current action; undefined if nothing drawn since lineStart
 	getPullDefs()								Returns string of all pull shape definitions (svg)
@@ -7063,7 +7077,7 @@ var Webchemy = (function () {
         webchemyDiv.appendChild(view.getDiv());
         webchemyDiv.appendChild(barDiv);
         target.appendChild(webchemyDiv);
-        
+
 		function setExitWarning() {
 			if(exitWarning) {
 				window.onbeforeunload = function() {
@@ -7074,7 +7088,7 @@ var Webchemy = (function () {
 			}
 		}
 		setTimeout(setExitWarning, 1000 * 60); //after 60 seconds someone might have created a nice drawing that they don't want to lose accidentally
-		
+
 
         //interface
         this.resize = function (w, h) {
@@ -7091,5 +7105,50 @@ var Webchemy = (function () {
         };
 
     }
+
+    // First time playing with SW? This script is just for logging,
+    // you can pretty much ignore it until you want to dive deeper.
+
+    if (!navigator.serviceWorker.controller) {
+        console.log("This page is not controlled by a ServiceWorker");
+    }
+    else {
+        console.log("This page is controlled by a ServiceWorker");
+    }
+
+    navigator.serviceWorker.getRegistration().then(function(reg) {
+        function showWaitingMessage() {
+            if(confirm("A new ServiceWorker is waiting to become active. It can't become active now because pages are still open that are controlled by the older version. Either close those tabs, or shift+reload them (which loads them without the ServiceWorker). That will allow the new version to become active, so it'll be used for the next page load.")) {
+                location.reload();
+            }
+        }
+
+        reg.addEventListener('updatefound', function() {
+            console.log("Found a new ServiceWorker!");
+            var installing = reg.installing;
+            reg.installing.addEventListener('statechange', function() {
+            if (installing.state == 'installed') {
+                console.log("New ServiceWorker installed.");
+                // give it a second to see if it activates immediately
+                setTimeout(function() {
+                if (installing.state == 'activated') {
+                    console.log("New ServiceWorker activated! Reload to load this page with the new ServiceWorker.");
+                }
+                else {
+                    showWaitingMessage();
+                }
+                }, 1000);
+            }
+            else if (installing.state == 'redundant') {
+                console.log("The new worker failed to install - likely an error during install");
+            }
+            });
+        });
+
+        if (reg.waiting) {
+            showWaitingMessage();
+        }
+    });
+
     return WebchemyApp;
 }());

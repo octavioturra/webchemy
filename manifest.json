@@ -1,0 +1,14 @@
+{
+  "short_name": "Webchemy",
+  "name": "Webchemy",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "/index.html",
+  "display": "standalone",
+  "orientation": "landscape"
+}

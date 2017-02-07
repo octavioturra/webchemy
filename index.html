@@ -3,15 +3,15 @@
 <head>
 	<meta charset="utf-8">
 	<title>Webchemy</title>
-	<META name="description" content="Webchemy is a cross-platform web drawing app that recreates some of Alchemy's features."> 
+	<META name="description" content="Webchemy is a cross-platform web drawing app that recreates some of Alchemy's features.">
 	<META name="keywords" content="draw, digital art, web app, ipad, iphone, alchemy, html5, svg, bitbof">
 	<meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;" />
-	
+
 	<link rel="icon" type="image/png" href="icon.png" />
 	<link href="ios_fav.png" rel="apple-touch-icon-precomposed"/>
 	<style>
 		.active{
-			border: 2px dotted red; 
+			border: 2px dotted red;
 		}
 	</style>
 	<script src="webchemy.js"></script>
@@ -25,6 +25,13 @@
 				document.getElementsByTagName('head')[0].appendChild(script);
 			}, 1000);
 		}, false);
+	</script>
+	<script>
+		// Let's register our serviceworker
+		navigator.serviceWorker.register('sw.js', {
+			// The scope cannot be parent to the script url
+			scope: './'
+		});
 	</script>
 </head>
 <body>
