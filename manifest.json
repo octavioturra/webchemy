@@ -1,6 +1,6 @@
 {
   "short_name": "Webchemy",
-  "name": "Webchemy",
+  "name": "Webchemy by Bitbof",
   "icons": [
     {
       "src": "icon.png",
@@ -10,5 +10,7 @@
   ],
   "start_url": "/index.html",
   "display": "standalone",
-  "orientation": "landscape"
+  "orientation": "landscape",
+  "theme_color": "#666666",
+  "background_color": "#fefefe"
 }
