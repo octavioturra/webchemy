@@ -3,12 +3,12 @@
   "name": "Webchemy by Bitbof",
   "icons": [
     {
-      "src": "icon.png",
+      "src": "/webchemy/icon.png",
       "sizes": "32x32",
       "type": "image/png"
     }
   ],
-  "start_url": "/index.html",
+  "start_url": "/webchemy/index.html",
   "display": "standalone",
   "orientation": "landscape",
   "theme_color": "#666666",
