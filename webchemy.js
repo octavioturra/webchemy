@@ -5623,7 +5623,15 @@ var Webchemy = (function () {
         function renderToCanvas(img){
             var canvas = document.querySelector('canvas');
             var ctx = canvas.getContext('2d');
-            ctx.drawImage(img, canvas.width/2 - img.width/2, 0);
+            var w = img.width * (height/img.height);
+            var h = img.height * (width/img.width);
+
+            if(img.width > img.height) {
+                ctx.drawImage(img, canvas.width/2 - canvas.width/2, 0, canvas.width, img.height * (width/img.width));
+            } else {
+                ctx.drawImage(img, canvas.width/2 - canvas.width/2, 0, img.width * (height/img.height), canvas.height);
+            }
+
         }
 
         function readImage(file, cb){
